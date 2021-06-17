@@ -41,12 +41,13 @@ public class ExcelAdapter {
 	    outputfile=namefile.substring(0,index);
 	    String ext = namefile.substring(index);
 	    outputfile = outputfile+"_out"+ext;
+	    Workbook wb=null;
 	    
 		/*CassandraAdapter.setFileLoadRecord(username,namefile, outputfile, "procesando",PATH);*/
 		try (InputStream inp = new FileInputStream(PATH+namefile)) {
 			
 			//InputStream inp = new FileInputStream("workbook.xlsx");
-			    Workbook wb = WorkbookFactory.create(inp);
+			    wb = WorkbookFactory.create(inp);
 			    Sheet sheet = wb.getSheetAt(0);
 			    Iterator<Row>itr= sheet.rowIterator();
 			    
@@ -218,7 +219,16 @@ public class ExcelAdapter {
 			    //CassandraAdapter.updateFileLoadRecord(namefile, username, "termino.");
 	}catch(Exception e) {
 		e.printStackTrace();
-	}
+	}finally {
+    	if(wb!=null) {
+    		try {
+    	wb.close();
+    		}catch(Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    }
 		
 		return outputfile;
 	}
