@@ -12,7 +12,7 @@ public class CassandraConnector {
 	    private Session session;
 
 	    public void connect(String node, Integer port) {
-	        Builder b = Cluster.builder().addContactPoint(node);
+	        Builder b = Cluster.builder().addContactPoint(node).withCredentials(TypeConstants.CASSANDRA_USER,TypeConstants.CASSANDRA_PWD);
 	        if (port != null) {
 	            b.withPort(port);
 	        }
