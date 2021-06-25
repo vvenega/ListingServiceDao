@@ -9,13 +9,15 @@ public class RedisAdapter {
 	private static RedisAdapter instance;
 	private static Jedis jedis;
 	
+	private final String REDIS_SERVER="REDIS_SERVER";
+	
 	static {
 		instance = new RedisAdapter();
 	}
 	
 	private RedisAdapter(){
 		
-		 pool = new JedisPool(new JedisPoolConfig(), "localhost");
+		 pool = new JedisPool(new JedisPoolConfig(), Config.getProperty(this.REDIS_SERVER));
 		
 	}
 	

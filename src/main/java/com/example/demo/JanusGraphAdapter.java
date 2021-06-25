@@ -1,13 +1,10 @@
 package com.example.demo;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +18,7 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 import org.apache.tinkerpop.gremlin.structure.util.reference.ReferenceVertex;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
 import org.springframework.web.bind.annotation.PathVariable;
 
 import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.*;
@@ -46,243 +40,58 @@ private static JanusGraphAdapter instance;
 		try {
 		graph = EmptyGraph.instance();
 	    g = graph.traversal().withRemote("remote-graph.properties");
+	    System.err.println("returned of graph traversal:"+g);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
-	public static void main(String[] args) {
-		
-		JSONParser jsonParser = new JSONParser();
-		
-		
-		try 
-        {
-        	List<String>list1 = new ArrayList<String>();
-        	list1.add("Daimler");
-        	list1.add("General");
-        	
-        	List<String> types = new ArrayList<String>();
-        	types.add("Listing");
-        	types.add("Donation");
-        	types.add("Exchange");
-        	types.add("Rent");
-        	ListingUserFeedCategoryDao dao1 = new ListingUserFeedCategoryDao();
-        	dao1.setCategory1("Coffee Pod Racks & Storage");
-        	dao1.setCategory2("PC Range Extenders");
-        	dao1.setCategory3("Skylight & UV Filters");
-        	dao1.setCategory4("Phone Cords");
-        	
-        	List<String> categoriesl = new ArrayList<String>();
-        	categoriesl.add("Multiporpuse");
-        	/*categoriesl.add("PC Range Extenders");
-        	categoriesl.add("Skylight & UV Filters");
-        	categoriesl.add("Phone Cords");*/
-        	//getListingsUserCategory("owner160",list1,"Multipurpose",types);
-        	getListingDetail("vvenega","5420072");
-        FileReader reader = new FileReader("/users/victorvenegas/desktop/bestbuy_seo.json");
-         
-        
-            //Read JSON file
-            Object obj = jsonParser.parse(reader);
- 
-            JSONArray employeeList = (JSONArray) obj;
-            //System.out.println(employeeList);
-            
-            
-            Iterator itr=employeeList.iterator();
-            
-            String type ="N/A";
-            
-            int countgeneral=1;
-            int countowner=1;
-            int quantity =1;
-            
-            ArrayList list = new ArrayList();
-            list.add("vvenega");
-            list.add("owner3759");
-            list.add("owner8511");
-            list.add("owner4796");
-            list.add("owner160");
-            
-            HashMap<String,String> map = new HashMap<String,String>();
-            map.put("vvenega", "Victor Venegas");
-            map.put("owner3759", "Sandra Munoz");
-            map.put("owner8511", "Pedro Garcia");
-            map.put("owner4796", "Carlos Gatica");
-            map.put("owner160", "Andrea Hernandez");
-            
-            
-            int index =0;
-            
-            ListingsDao dao = new ListingsDao();
-            
-            int cont=0;
-            
-            while(itr.hasNext() && cont<1000) {
-            	cont++;
-            	JSONObject object = (JSONObject)itr.next();
-            	String name = (String)object.get("name");
-            	dao.setName(name);
-            	String shortDescription = (String)object.get("shortDescription");
-            	dao.setShortdescription(shortDescription);
-            	dao.setLongDescription(shortDescription);
-            	String thumbnailImage = (String)object.get("thumbnailImage");
-            	dao.setThumbnailimage(thumbnailImage);
-            	
-            	Double salePrice = 0.0;
-            	try {
-            	 salePrice = (Double)object.get("salePrice");
-            	}catch(Exception e) {
-            		
-            		Long temp = (Long)object.get("salePrice");
-            		salePrice = Double.parseDouble(temp.toString());
-            	}
-            	dao.setSaleprice(salePrice);
-            	String manufacturer = (String)object.get("manufacturer");
-            	dao.setManufacturer(manufacturer);
-            	
-            	
-            	boolean entro=false;
-            	
-            	if(type.equals("Listing") && !entro) {
-            		type ="Rent";
-                	
-                	entro = true;
-            	}
-            	else if( (type.equals("N/A") || type.equals("Exchange")) && !entro) {
-                type ="Listing";
-            	
-            	entro=true;
-            	}else if(type.equals("Rent") && !entro) {
-            		type ="Donation";
-                	
-                	entro=true;
-            	}else if(type.equals("Donation") && !entro) {
-            		type ="Exchange";
-                	
-                	entro=true;
-            	}
-            	dao.setType(type);
-            	
-            	String image = (String)object.get("image");
-            	List<String>lstImage = new ArrayList<String>();
-            	lstImage.add(image);
-            	lstImage.add(image);
-            	lstImage.add(image);
-            	lstImage.add(image);
-            	dao.setImage(lstImage);
-            	
-            	String salePrice_range = (String)object.get("salePrice_range");
-            	dao.setSalespricerange(salePrice_range);
-            	JSONArray categories = (JSONArray) object.get("categories");
-            	long objectid = Long.parseLong((String)object.get("objectID"));
-            	dao.setObjectid(objectid);
-            	
-            	Iterator itr2 = categories.iterator();
-            	List<String> lstCategory=new ArrayList<String>();
-            	while(itr2.hasNext()) {
-            		String category = (String)itr2.next();
-            		if(category!=null && !category.equalsIgnoreCase(""))
-            		 lstCategory.add(category);
-            	}
-            	
-            	dao.setCategory(lstCategory);
-            	
-            	String owner = null;
-            	/*if(countgeneral%5 !=0) {
-            		countowner=countowner+1;
-            		quantity =quantity+1;
-            	}*/
-            	owner = (String)list.get(index);
-            	dao.setOwner(owner);
-            	String nameowner = map.get(owner);
-            	
-            	if(index ==4)
-            		index=0;
-            	else
-            		index++;
-            	
-            	String overview ="<p>	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n"
-        		  		+ "		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n"
-        		  		+ "		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\n"
-        		  		+ "		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\n"
-        		  		+ "		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\n"
-        		  		+ "		proident, sunt in culpa qui officia ididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n"
-        		  		+ "		quis nostrud exercitation ullamco laboris nisi deserunt mollit anim id est laborum.</p>\n"
-        		  		+ "	<p>	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n"
-        		  		+ "		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n"
-        		  		+ "		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\n"
-        		  		+ "		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\n"
-        		  		+ "		cillum dolore eu fugiat nulla pariatur. Excepteurididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n"
-        		  		+ "		quis nostrud exercitation ullamco laboris nisi sint occaecat cupidatat non\n"
-        		  		+ "		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n"
-        		  		+ "	<p>	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n"
-        		  		+ "		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n"
-        		  		+ "		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\n"
-        		  		+ "		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\n"
-        		  		+ "		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\n"
-        		  		+ "		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n"
-        		  		+ "	<p>	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n"
-        		  		+ "		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n"
-        		  		+ "		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\n"
-        		  		+ "		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\n"
-        		  		+ "		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\n"
-        		  		+ "		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>";
-            	
-            	dao.setOverview(overview);
-            	
-            	String result="";
-            	if(dao.getCategory().size()>0)
-            	  result=addListing(dao);
-            	
-            	
-            	    System.err.println("Platform Result:"+result);
-            	
-            		
-            	
-            }
-             
-            //Iterate over employee array
-            //employeeList.forEach( emp -> parseEmployeeObject( (JSONObject) emp ) );
- 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-		
-	}
+	
 	
 	
 	public static Vertex addCategory(String category) {
-		Vertex cat;
+		Vertex cat=null;
+		
+		try {
 		cat = g.addV("Category").property("name", category).next();
+		}catch(Exception e) {
+			System.err.println(e.getLocalizedMessage());
+		}
 		return cat;
 		
 	}
 	
 	public static Vertex addImage(String image) {
-		Vertex cat;
+		Vertex cat=null;
+		try {
 		cat = g.addV("Image").property("name", image).next();
+		}catch(Exception e) {
+			System.err.println(e.getLocalizedMessage());
+		}
 		return cat;
 		
 	}
 	
 	
 	public static Vertex addType(String type) {
-		Vertex cat;
+		Vertex cat=null;
+		try {
 		cat = g.addV("Type").property("name", type).next();
+		}catch(Exception e) {
+			System.err.println(e.getLocalizedMessage());
+		}
 		return cat;
 		
 	}
 	
 	public static Vertex addManufacturer(String manufacturer) {
-		Vertex cat;
+		Vertex cat=null;
+		try {
 		cat = g.addV("Manufacturer").property("name", checkForEspecialCharacters(manufacturer)).next();
+		}catch(Exception e) {
+			System.err.println(e.getLocalizedMessage());
+		}
 		return cat;
 		
 	}
@@ -316,7 +125,6 @@ private static JanusGraphAdapter instance;
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 		
 		return list;
 		
@@ -374,9 +182,8 @@ public static List<Object> existsManufacturer(ListingsDao dao) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
-	
 	
 	return list;
 	
@@ -400,7 +207,7 @@ public static Vertex  getUser(ListingsDao dao) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -422,7 +229,7 @@ public static boolean existsObjectid(ListingsDao dao) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -444,7 +251,7 @@ public static boolean wasSharedbyUser(String username,long objectid) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -469,7 +276,7 @@ private static Vertex getObjectid(String objectid) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -494,7 +301,7 @@ private static Vertex getVertexObjectid(String objectid) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -519,7 +326,7 @@ private static Vertex getVertexUser(String username) {
    
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -544,7 +351,7 @@ public static boolean sharePost(String objectid,String username) {
 		}
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -635,7 +442,7 @@ public static String addListing(ListingsDao dao) {
 		}
     
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		
 	}
 	
@@ -722,7 +529,7 @@ public static List<ListingsDao> getSampleListings(String username, List<String> 
 		
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	return lstDao;
@@ -796,9 +603,8 @@ private static ListingDetailDao setListingDetailEdges(ListingDetailDao dao) {
 				dao.setCategory(lstCategory);
 				dao.setImage(lstImage);
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
-	
 	return dao;
 }
 
@@ -875,7 +681,7 @@ private static ListingsDao setListingEdges(ListingsDao dao) {
 				dao.setCategory(lstCategory);
 				//dao.setImage(lstImage);
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	return dao;
@@ -924,7 +730,7 @@ public static List<ListingsDao> getCategoriesPerObjectId(List<ListingsDao>list) 
 	
 	
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		newList = new ArrayList<ListingsDao>();
 	}
 	
@@ -932,8 +738,12 @@ public static List<ListingsDao> getCategoriesPerObjectId(List<ListingsDao>list) 
 }
 
 public static List<CategoryDao> getCategoriesPerUser(String username,List<String> ecommunities,
-		@PathVariable List<String> types) {
+		 List<String> types) {
 	
+	System.err.println("username:"+username);
+	System.err.println("username:"+ecommunities);
+	System.err.println("username:"+types);
+
 	ArrayList<CategoryDao> list = new ArrayList<CategoryDao>();
 	
 	try {
@@ -948,6 +758,8 @@ public static List<CategoryDao> getCategoriesPerUser(String username,List<String
 	.out("istype").has("Type","name",P.within((Collection)types)).select("lst").out("iscategory")
 	.valueMap()
 	.dedup().toList();
+	
+	System.err.println(lst);
 	
 	Iterator<Map<Object,Object>> itr = lst.iterator();
 	
@@ -971,7 +783,7 @@ public static List<CategoryDao> getCategoriesPerUser(String username,List<String
 	
 	
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		list = new ArrayList<CategoryDao>();
 	}
 	
@@ -1019,7 +831,7 @@ public static List<CategoryDao> getUserCategories(String username,List<String> e
 	
 	
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		list = new ArrayList<CategoryDao>();
 	}
 	
@@ -1077,7 +889,7 @@ public static ListingUserFeedCategoryDao  getCategoriesNumber(String username,Li
 	feed.setNumberCategory4(number4);
 	
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		feed = new ListingUserFeedCategoryDao();
 	}
 	
@@ -1132,7 +944,7 @@ public static ListingUserFeedCategoryDao  getSampleCategories(String username,Li
 	}
 	
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		feed = new ListingUserFeedCategoryDao();
 	}
 	
@@ -1179,7 +991,7 @@ public static ListingUserFeedCategoryDao getFeedCategoryType(String username,Lis
 		System.err.println(LocalDateTime.now()+" Types Finish................. query numbers");
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	return feed;
@@ -1249,7 +1061,7 @@ public static ListingsDao getListingbyObjectid(String objectid) {
 		System.err.println("shortdes:"+dao.getShortdescription());
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -1321,7 +1133,7 @@ public static ListingDetailDao getListingDetail( String user, String objectid) {
 		System.err.println("short Des:"+dao.getShortdescription());
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	
@@ -1402,7 +1214,7 @@ public static List<ListingsDao> getListingsCategory(String username,List<String>
 		//System.err.println(lst);
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	return list;
@@ -1483,7 +1295,7 @@ public static List<ListingsDao> getListingsUserCategory(String username,List<Str
 		//System.err.println(lst);
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 	}
 	
 	return list;
@@ -1497,11 +1309,16 @@ public static double getMaxPrice(String username,List<String> ecommunities,List<
  DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 		 
 		 System.err.println(LocalDateTime.now()+" Max Start................. query numbers");
+		 System.err.println("username:"+username);
+		 System.err.println("ecommunities:"+ecommunities);
+		 System.err.println("types:"+types);
 		Comparable comp= g.V().has("Ecommunity","name",P.within((Collection)ecommunities))
 		.in("iscommunity").not(has("username",username))
 		.out("post").as("lst")
 		.out("istype").has("Type","name",P.within((Collection)types)).select("lst")
-		.values("saleprice").max().next();
+		.values("saleprice")
+		.max()
+		.next();
 		
 		System.err.println(LocalDateTime.now()+" Max Finish................. query numbers");
 		
@@ -1516,7 +1333,7 @@ public static double getMaxPrice(String username,List<String> ecommunities,List<
 		}*/
 		
 	}catch(Exception e) {
-		e.printStackTrace();
+		System.err.println(e.getLocalizedMessage());
 		maxSalePrice=0;
 	}
 	

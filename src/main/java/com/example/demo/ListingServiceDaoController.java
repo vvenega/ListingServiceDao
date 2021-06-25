@@ -3,14 +3,10 @@ package com.example.demo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +16,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import java.util.Map.Entry;
+
 
 
 @RestController
@@ -70,6 +66,7 @@ public class ListingServiceDaoController {
 	@GetMapping("/CategoriesDAO/{user}/{ecommunities}/{types}")
 	public List<CategoryDao> getCategories(@PathVariable String user,@PathVariable List<String>ecommunities,
 			@PathVariable List<String> types) {
+        
 
 		List<CategoryDao> list= JanusGraphAdapter.getCategoriesPerUser(user, ecommunities,types);
 		
@@ -275,6 +272,7 @@ public class ListingServiceDaoController {
 		dao=JanusGraphAdapter.getFeedCategoryType(user,ecommunities,dao,types);
 		dao.setMinPrice(0.0);
 		dao.setMaxPrice(JanusGraphAdapter.getMaxPrice(user, ecommunities,types));
+		//dao.setMaxPrice(0.0);
     	dao.setUser(user);			
 		return dao;
 		
