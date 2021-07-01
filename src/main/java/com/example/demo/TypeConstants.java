@@ -7,6 +7,7 @@ public class TypeConstants {
 	private final static String CASSANDRA_USER_VAR="CASSANDRA_USER";
 	private final static String CASSANDRA_PWD_VAR="CASSANDRA_PWD";
 	private final static String NAMESPACE_VAR="NAMESPACE";
+	private final static String PATH_DIRECTORY_VAR="PATH_DIRECTORY";
 	
 	
 	public final static  String CASSANDRA_SERVER=Config.getProperty(CASSANDRA_SERVER_VAR);
@@ -17,6 +18,7 @@ public class TypeConstants {
 	public final static String PRODUCT_REQUESTED_VIEW="PRODUCT_REQUESTED_VIEWED";
 	public final static String PRODUCT_REQUESTED_SOLD="PRODUCT_REQUESTED_SOLD";
 	public final static String PRODUCT_REQUESTED_RED="PRODUCT_REQUESTED_RED";
+	public final static String PATH_DIRECTORY=Config.getProperty(PATH_DIRECTORY_VAR);
 	
 
 }

@@ -1,4 +1,5 @@
 hosts: [localhost]
+#hosts: [10.245.55.25]
 port: 8182
 serializer: { 
     className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0,

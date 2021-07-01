@@ -19,7 +19,7 @@ public class ExcelAdapter {
 	
 	private static ExcelAdapter instance;
 	
-	private static final String PATH="/users/victorvenegas/desktop/testupload/";
+	private static final String PATH=TypeConstants.PATH_DIRECTORY;
 	
 	static {
 		instance = new ExcelAdapter();
